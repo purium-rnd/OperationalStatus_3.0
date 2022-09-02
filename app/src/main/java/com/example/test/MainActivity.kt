@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity(),ChangedTimeListener {
     var isRemove:Boolean = false    // 미세먼지 제거 중인가
     var bgNum:Int = 0
     private var isScoreImageFirst:Boolean = true
+    //var isOperationTimeLong = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -627,6 +628,14 @@ class MainActivity : AppCompatActivity(),ChangedTimeListener {
                             mActivity.tv_subtitle.resumeScroll()
                         }
                     }
+                    val operation_time = intent.getIntExtra("operation_time", 0)
+                    Log.d("by_debug", "operation_time : $operation_time")
+                    if (operation_time == 1)
+                        MyApplication.prefs.isOperationTimeLong = true
+                    else
+                        MyApplication.prefs.isOperationTimeLong = false
+
+
                     val data = intent.getIntExtra("sensor", 0)
                     Log.d("by_debug", "receive data $data")
                     if (data > 0) {
@@ -757,7 +766,12 @@ class MainActivity : AppCompatActivity(),ChangedTimeListener {
             video_view.setOnCompletionListener({ mp ->
                 if (isWating) {
                     video_view.pause()
-                    video_view.setVideoURI(Uri.parse(videoRootPath + R.raw.remove))
+                    if (MyApplication.prefs.isOperationTimeLong) {
+                        video_view.setVideoURI(Uri.parse(videoRootPath + R.raw.remove_original))
+                    } else {
+                        video_view.setVideoURI(Uri.parse(videoRootPath + R.raw.remove))
+                    }
+
                     video_view.seekTo(0)
                     video_view.start()
                 } else {
@@ -786,36 +800,69 @@ class MainActivity : AppCompatActivity(),ChangedTimeListener {
     }
 
     private fun removeVideo() {
-        val mediaPlayer:MediaPlayer = MediaPlayer.create(this, R.raw.sound_pm_removing)
-        mediaPlayer.start()
-        val mediaPlayer2:MediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.sound_pm_remove_complete)
-
-        var count = 0
-        timer(period = 1000) {
-            count++
-            if (count == 11) {
-                cancel()
-                runOnUiThread {
-                    mediaPlayer.release()
-                    mediaPlayer2.start()
-                }
-            }
-        }
-
         val videoRootPath = "android.resource://$packageName/"
         video_view.pause()
-        video_view.setVideoURI(Uri.parse(videoRootPath + R.raw.remove))
+        video_view.setVideoURI(Uri.parse(videoRootPath + R.raw.remove_original))
         video_view.seekTo(0)
         video_view.start()
         video_view.setOnCompletionListener({ mp ->
             mDataBroadcastReceiver!!.isRunningVideo = false
             waitVideo()
-            mediaPlayer2.release()
         })
         video_view.setOnErrorListener({ mp, what, extra ->
             Log.e("by_debug", "remove video error")
             true
         })
+
+        /*
+        Log.d("by_debug", "removeVideo : " + MyApplication.prefs.isOperationTimeLong)
+        if (MyApplication.prefs.isOperationTimeLong) {
+            val videoRootPath = "android.resource://$packageName/"
+            video_view.pause()
+            video_view.setVideoURI(Uri.parse(videoRootPath + R.raw.remove_original))
+            video_view.seekTo(0)
+            video_view.start()
+            video_view.setOnCompletionListener({ mp ->
+                mDataBroadcastReceiver!!.isRunningVideo = false
+                waitVideo()
+            })
+            video_view.setOnErrorListener({ mp, what, extra ->
+                Log.e("by_debug", "remove video error")
+                true
+            })
+        } else {
+            val mediaPlayer:MediaPlayer = MediaPlayer.create(this, R.raw.sound_pm_removing)
+            mediaPlayer.start()
+            val mediaPlayer2:MediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.sound_pm_remove_complete)
+
+            var count = 0
+            timer(period = 1000) {
+                count++
+                if (count == 11) {
+                    cancel()
+                    runOnUiThread {
+                        mediaPlayer.release()
+                        mediaPlayer2.start()
+                    }
+                }
+            }
+
+            val videoRootPath = "android.resource://$packageName/"
+            video_view.pause()
+            video_view.setVideoURI(Uri.parse(videoRootPath + R.raw.remove))
+            video_view.seekTo(0)
+            video_view.start()
+            video_view.setOnCompletionListener({ mp ->
+                mDataBroadcastReceiver!!.isRunningVideo = false
+                waitVideo()
+                mediaPlayer2.release()
+            })
+            video_view.setOnErrorListener({ mp, what, extra ->
+                Log.e("by_debug", "remove video error")
+                true
+            })
+        }*/
+
         /*
         video_view.setOnCompletionListener({ mp ->
             mHandler!!.isRunningVideo = false
