@@ -468,4 +468,11 @@
             android:layout_width="640px"
             android:layout_height="400px"
             android:layout_gravity="center"/>-->
+
+    <ImageView
+        android:id="@+id/fire_alarm"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:background="@drawable/fire_alarm"/>
 </FrameLayout>

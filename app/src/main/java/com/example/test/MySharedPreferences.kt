@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 class MySharedPreferences(context: Context) {
     var mContext = context
     var sub_title: String = context.getString(R.string.sub_title)
-    var isOperationTimeLong = true
+    var isOperationTimeLong = false
 
     val PREFS_FILE_NAME = "prefs"
     var prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILE_NAME, 0)

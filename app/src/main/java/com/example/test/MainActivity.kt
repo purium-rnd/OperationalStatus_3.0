@@ -73,6 +73,7 @@ class MainActivity : AppCompatActivity(),ChangedTimeListener {
     var bgNum:Int = 0
     private var isScoreImageFirst:Boolean = true
     //var isOperationTimeLong = false
+    var temperature = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,6 +107,7 @@ class MainActivity : AppCompatActivity(),ChangedTimeListener {
             // 22.02.23 : 로고 클릭시 매니저 앱 실행 (제품 테스트 용)
             //var intent = packageManager.getLaunchIntentForPackage("com.neocartek.purium.manager")
             //startActivity(intent)
+            /*
             if (checkPackageInstalled("com.neocartek.purium.manager")) {
                 val runtime = Runtime.getRuntime()
                 try {
@@ -117,7 +119,7 @@ class MainActivity : AppCompatActivity(),ChangedTimeListener {
                 } catch (e: Exception) {
                     e.fillInStackTrace()
                 }
-            }
+            }*/
         }
     }
 
@@ -445,6 +447,16 @@ class MainActivity : AppCompatActivity(),ChangedTimeListener {
 
     private fun tempViewUpdate(data: Int) {
         tv_temp.text = data.toString()
+        // 온도가 80도 이상 일 경우
+        if (data > 80 && temperature > 80) {
+            fire_alarm.visibility = View.VISIBLE
+            var anim = AnimationUtils.loadAnimation(this, R.anim.alpha_show4)
+            fire_alarm.startAnimation(anim)
+        } else {
+            fire_alarm.visibility = View.INVISIBLE
+            fire_alarm.clearAnimation()
+        }
+        temperature = data
     }
 
     private fun humiViewUpdate(data: Int) {
@@ -880,6 +892,7 @@ class MainActivity : AppCompatActivity(),ChangedTimeListener {
      * @param packageName, 패키지 이름
      * @return 패키지여부 Boolean
      */
+    /*
     private fun checkPackageInstalled(packageName: String): Boolean {
         try {
             val pm = this.packageManager
@@ -904,5 +917,5 @@ class MainActivity : AppCompatActivity(),ChangedTimeListener {
             return false
         }
         return true
-    }
+    }*/
 }
